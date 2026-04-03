@@ -641,8 +641,9 @@
                             </div>
                         `;
                     } else {
+                        const isRelocating = !!this.relocatingId;
                         html += `
-                            <div class="grid-cell empty" data-index="${i}">
+                            <div class="grid-cell empty ${isRelocating ? 'relocating-target' : ''}" data-index="${i}">
                                 <div class="grid-cell-num">${i + 1}</div>
                             </div>
                         `;
@@ -924,6 +925,7 @@
             currentAreaId: null,
             editingAreaId: null,
             currentGridIndex: null,
+            relocatingId: null, // ID della pianta in trasloco
             init() { Store.init(); this.initListeners(); this.updateHome(); },
             updateHome() {
                 const count = Store.getAllActivePlantings().length;
@@ -1027,12 +1029,31 @@
             },
             bindDettaglio() {
                 const modal = document.getElementById('modal-planting');
-                document.getElementById('back-to-orti').onclick = () => this.showView('orti');
+                document.getElementById('back-to-orti').onclick = () => { this.relocatingId = null; this.showView('orti'); };
                 document.getElementById('open-add-planting').onclick = () => {
                     this.currentGridIndex = null; this.preparePModal();
                 };
-                document.querySelectorAll('.grid-cell.empty').forEach(cell => cell.onclick = () => {
-                    this.currentGridIndex = parseInt(cell.dataset.index); this.preparePModal();
+
+                // Gestione Riposizionamento
+                document.querySelectorAll('.btn-start-relocate').forEach(btn => {
+                    btn.onclick = () => {
+                        const id = btn.dataset.id;
+                        this.relocatingId = (this.relocatingId === id) ? null : id;
+                        this.showView('dettaglio', {id: this.currentAreaId});
+                    };
+                });
+
+                document.querySelectorAll('.grid-cell.empty').forEach(cell => {
+                    cell.onclick = () => {
+                        if (this.relocatingId) {
+                            Store.assignPlantingToCell(this.relocatingId, parseInt(cell.dataset.index));
+                            this.relocatingId = null;
+                            this.showView('dettaglio', {id: this.currentAreaId});
+                        } else {
+                            this.currentGridIndex = parseInt(cell.dataset.index); 
+                            this.preparePModal();
+                        }
+                    };
                 });
                 document.querySelectorAll('.grid-cell.occupied').forEach(cell => cell.onclick = () => {
                     this.showPlantingDetail(cell.dataset.id);
