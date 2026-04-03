@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>L'orto di Vittoria</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1b5e20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables for theming based on the mockup */
+        :root {
+            --bg-color: #f7f9f2;          /* Sfondo panna/crema */
+            --header-bg: #1c5f30;         /* Verde scuro dell'header */
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --card-bg: #ffffff;
+            --card-green-bg: #d0e7b8;     /* Verde chiaro delle funzioni */
+            --accent-color: #ffb703;      /* Giallo per allerte/sole */
+            --nav-active: #1b5e20;
+            --nav-inactive: #9e9e9e;
+            
+            --border-radius-lg: 20px;
+            --border-radius-md: 12px;
+            --border-radius-sm: 8px;
+        }
+
+        /* Stili Globali */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0e0e0;
+            color: var(--text-primary);
+            line-height: 1.4;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Contenitore principale (Telefono) */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            height: 100dvh;
+            background-color: var(--bg-color);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* HEADER */
+        .top-header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 20px 20px 25px 20px;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title-container { text-align: center; margin-bottom: 20px; margin-top: 10px; position: relative; }
+        .title-container h1 { font-family: 'Caveat', cursive; font-size: 34px; font-weight: 700; }
+        .subtitle { font-size: 12px; opacity: 0.9; }
+
+        .header-icons { position: absolute; top: 5px; right: 0; display: flex; gap: 15px; }
+        .header-icon { font-size: 18px; color: #ffd166; cursor: pointer; }
+
+        /* Ricerca */
+        .search-bar-container {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 75%;
+        }
+
+        .search-bar {
+            background-color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
+        .search-bar input { border: none; outline: none; width: 100%; font-size: 14px; margin-left: 10px; }
+
+        /* MAIN CONTENT */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px 20px 20px 20px;
+        }
+
+        .section-title { 
+            font-size: 14px; 
+            font-weight: 800; 
+            color: var(--header-bg); 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 8px; 
+            margin-bottom: 15px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+        .section-block { margin-bottom: 25px; }
+
+        /* Dashboard Cards */
+        .dashboard-cards { display: flex; gap: 10px; }
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            padding: 12px 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+        }
+        .stat-card i { font-size: 20px; margin-bottom: 6px; }
+        .icon-alert { color: var(--accent-color); }
+        .icon-weather { color: #87ceeb; }
+        .icon-group { display: flex; align-items: center; gap: 5px; color: var(--header-bg); margin-bottom: 6px; }
+        .card-title { font-size: 12px; font-weight: 700; }
+        .card-subtitle { font-size: 11px; color: var(--text-secondary); }
+
+        /* Funzioni Principali */
+        .functions-list { display: flex; flex-direction: column; gap: 12px; }
+        .function-card {
+            background-color: var(--header-bg);
+            border: none;
+            border-radius: var(--border-radius-md);
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.1s, box-shadow 0.2s;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .function-card:active { transform: scale(0.98); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+        .function-card.green-tint { background-color: var(--header-bg); }
+        .func-icon-container { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .func-icon { font-size: 24px; color: white; }
+        .green-tint .func-icon { color: white; }
+        .func-text h3 { font-size: 14px; font-weight: 800; margin-bottom: 4px; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        .func-text p { font-size: 11px; color: rgba(255,255,255,0.8); margin: 0; }
+
+        /* VISTA ORTI E MODALI */
+        .view-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+            background-color: var(--header-bg); 
+            padding: 12px 15px; 
+            border-radius: var(--border-radius-md); 
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .view-header h2 { font-size: 18px; color: white; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .view-header .btn-icon { color: white; padding: 0; }
+        .btn-icon { background: none; border: none; font-size: 20px; cursor: pointer; }
+
+        /* LISTE AREE */
+        .areas-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .area-item-card { background: white; padding: 15px; border-radius: var(--border-radius-md); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        
+        .area-with-icon { display: flex; align-items: center; gap: 12px; }
+        .area-type-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        
+        .area-info h4 { font-size: 15px; margin-bottom: 2px; }
+        .area-info p { font-size: 12px; color: var(--text-secondary); }
+        .area-date { font-size: 10px; font-style: italic; color: #999; }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: var(--border-radius-lg); overflow-y: auto; max-height: 90vh; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: var(--text-secondary); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: var(--border-radius-sm); font-family: inherit; font-size: 14px; }
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+        .calc-preview { background: #f0f0f0; padding: 10px; border-radius: var(--border-radius-sm); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 20px; }
+        .btn-primary { background: var(--header-bg); color: white; border: none; padding: 14px; width: 100%; border-radius: var(--border-radius-sm); font-weight: 600; cursor: pointer; }
+        .btn-text { background: none; border: none; color: var(--text-secondary); padding: 14px; cursor: pointer; width: 100%; }
+        .btn-full { background: white; border: 1px solid var(--header-bg); color: var(--header-bg); padding: 15px; width: 100%; border-radius: var(--border-radius-md); font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+
+        /* LISTA PIANTINE */
+        .plantings-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .planting-item { background: white; padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .p-name { font-weight: 700; font-size: 14px; }
+        .p-qty { font-size: 12px; font-weight: 800; background: #eee; padding: 2px 6px; border-radius: 4px; }
+        .p-date { font-size: 10px; color: #999; }
+        .empty-msg { text-align: center; color: #999; font-style: italic; padding: 20px 0; font-size: 13px; }
+
+        /* GARDEN GRID */
+        .grid-container-title { font-size: 14px; font-weight: 800; color: var(--header-bg); margin-bottom: 10px; margin-top: 20px; text-transform: uppercase; }
+        .garden-grid {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 25px;
+            background: rgba(0,0,0,0.03);
+            padding: 10px;
+            border-radius: var(--border-radius-md);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .grid-cell {
+            aspect-ratio: 1 / 1;
+            background: white;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s, border-color 0.2s, background-color 0.2s;
+        }
+        .grid-cell:active { transform: scale(0.95); }
+        .grid-cell.occupied { border: 1px solid #8da372; background: #f1f8e9; }
+        .grid-cell.relocating-target { border: 2px solid #ff5252; background: #fff5f5; animation: pulse-border 1.5s infinite; }
+        @keyframes pulse-border { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        .grid-cell-icon { font-size: 24px; margin-bottom: 3px; }
+        .grid-cell-name { font-size: 9px; font-weight: 700; text-align: center; padding: 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; width: 100%; }
+        
+        .grid-cell-num { font-weight: 800; color: #bbb; transition: all 0.2s; }
+        .grid-cell.empty .grid-cell-num { font-size: 38px; color: rgba(74, 93, 35, 0.35); }
+        .grid-cell.occupied .grid-cell-num { position: absolute; top: 3px; left: 4px; font-size: 8px; color: #bbb; }
+        
+        .grid-cell-add { display: none; }
+
+        /* NAVIGAZIONE BOTTOM */
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; background-color: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 10; }
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--nav-inactive); font-size: 10px; cursor: pointer; width: 25%; }
+        .nav-item.active { color: var(--nav-active); }
+
+        .area-detail-summary { background: white; padding: 15px; border-radius: var(--border-radius-md); margin-bottom: 20px; font-size: 13px; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .fab { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 28px; background-color: var(--header-bg); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 100; }
+        
+        .p-name { color: #333; }
+        .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+
+        /* Riepilogo Piante */
+        .plant-summary-card { background: white; padding: 15px; border-radius: var(--border-radius-md); margin-bottom: 10px; border-left: 4px solid var(--header-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .p-sum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .p-sum-name { font-weight: 800; font-size: 15px; color: var(--header-bg); }
+        .p-sum-total { font-size: 12px; font-weight: 700; background: #f0f0f0; padding: 2px 8px; border-radius: 10px; }
+        .p-sum-details { font-size: 11px; color: #666; font-style: italic; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="top-header">
+            <div class="title-container">
+                <h1>L'orto di Vittoria</h1>
+                <p class="subtitle">Coltivare con amore</p>
+            </div>
+            <div class="search-bar-container">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search" placeholder="Cerca piante o aree...">
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area" id="main-content">
+            <!-- HOME VIEW -->
+            <div id="home-view">
+                <section class="section-block">
+                    <h2 class="section-title">PANORAMICA</h2>
+                    <div class="dashboard-cards">
+                        <div class="stat-card">
+                            <i class="fa-solid fa-triangle-exclamation icon-alert"></i>
+                            <span class="card-title">Allerte</span>
+                            <span class="card-subtitle">Zero allerte</span>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fa-solid fa-cloud-sun icon-weather"></i>
+                            <span class="card-title">Previsioni</span>
+                            <span class="card-subtitle">Frosinone</span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-group"><i class="fa-solid fa-seedling"></i></div>
+                            <span class="card-title">Attive</span>
+                            <span id="home-active-count" class="card-subtitle">...</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section-block">
+                    <h2 class="section-title">FUNZIONI PRINCIPALI</h2>
+                    <div class="functions-list">
+                        <button class="function-card" id="btn-goto-orti">
+                            <div class="func-icon-container"><i class="fa-brands fa-pagelines func-icon"></i></div>
+                            <div class="func-text"><h3>I MIEI ORTI</h3><p>Gestisci le mappe e le file.</p></div>
+                        </button>
+                        <button class="function-card" id="btn-goto-meteo">
+                            <div class="func-icon-container"><i class="fa-solid fa-temperature-half func-icon"></i></div>
+                            <div class="func-text"><h3>REGISTRO METEO</h3><p>Storico min/max e pioggia.</p></div>
+                        </button>
+                        <button class="function-card" id="btn-goto-catalog">
+                            <div class="func-icon-container"><i class="fa-solid fa-book func-icon"></i></div>
+                            <div class="func-text"><h3>CATALOGO VARIETÀ</h3><p>Personalizza l'elenco piante.</p></div>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- VISTA DINAMICA -->
+            <div id="dynamic-view" class="hidden"></div>
+            
+            <div class="bottom-spacer"></div>
+        </main>
+
+        <!-- Modal Planting DETAIL (GLOBALE) -->
+        <div id="modal-planting-detail" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="det-title">Dettaglio Pianta</h3>
+                <div class="form-group"><label>Stato</label><select id="det-type"><option value="Piantina">Piantina</option><option value="Seme">Seme</option></select></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Data Inizio</label><input type="date" id="det-start"></div>
+                    <div class="form-group"><label>Data Fine/Espianto</label><input type="date" id="det-end"></div>
+                </div>
+                <div class="form-group"><label>Note</label><textarea id="det-notes" rows="3"></textarea></div>
+                <div class="modal-actions">
+                    <button id="save-det" class="btn-primary">Salva Modifiche</button>
+                    <button id="estirpa-det" class="btn-primary" style="background-color: #bc6733;"><i class="fa-solid fa-scissors"></i> Estirpa / Fine Ciclo</button>
+                    <button id="close-det" class="btn-text">Chiudi</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
+            <button class="nav-item" data-view="calendario"><i class="fa-regular fa-calendar"></i><span>Calendario</span></button>
+            <button class="nav-item" data-view="piante"><i class="fa-solid fa-seedling"></i><span>Piante</span></button>
+            <button class="nav-item" data-view="impostazioni"><i class="fa-solid fa-gear"></i><span>Imp.</span></button>
+        </nav>
+    </div>
+
+    <script>
+        const Utils = {
+            formatDate(iso) {
+                if (!iso) return "";
+                const [y, m, d] = iso.split('-');
+                return `${d}/${m}/${y}`;
+            },
+            formatMonth(iso) {
+                if (!iso) return "";
+                const [y, m] = iso.split('-');
+                return `${m}/${y}`;
+            },
+            HISTORICAL_AVG: {
+                temp: [7.0, 8.0, 11.0, 14.5, 18.5, 22.5, 25.5, 25.5, 21.5, 16.5, 11.5, 8.0],
+                rain: [3.0, 2.7, 2.3, 2.2, 1.8, 1.3, 1.0, 1.5, 2.3, 3.2, 4.0, 3.6] // Daily Avg
+            },
+            getWeatherColor(value, type, dateIso) {
+                if (value === undefined || value === null || isNaN(value)) return '#f5f5f5';
+                const month = parseInt(dateIso.split('-')[1]) - 1;
+                const avg = type === 'temp' ? this.HISTORICAL_AVG.temp[month] : (this.HISTORICAL_AVG.rain[month] || 0);
+                const delta = value - avg;
+                
+                if (type === 'temp') {
+                    const ratio = Math.max(-1, Math.min(1, delta / 8));
+                    if (ratio > 0) {
+                        // Caldo: Giallo (60) -> Arancio (30) -> Rosso (0)
+                        const hue = Math.round(60 - (ratio * 60));
+                        return `hsl(${hue}, 100%, 80%)`;
+                    } else if (ratio < 0) {
+                        // Freddo: Celeste (190) -> Blu (230)
+                        const absRatio = Math.abs(ratio);
+                        const hue = Math.round(190 + (absRatio * 40));
+                        return `hsl(${hue}, 100%, 85%)`;
+                    }
+                    return '#fdfdfd'; // Neutro
+                } else {
+                    // Pioggia: Secco -> Umido -> Bagnato
+                    if (value < 0.2) return '#f9f9f9';
+                    const ratio = Math.max(0.1, Math.min(1, value / 10));
+                    const hue = Math.round(200 - (ratio * 20)); 
+                    return `hsl(${hue}, 80%, ${Math.round(95 - ratio * 40)}%)`;
+                }
+            }
+        };
+
+        const STORE_KEY = 'orto_vittoria_data_v1';
+        const Store = {
+            data: { areas: [], plantTypes: [], plantings: [], weather: [] },
+            init() {
+                const saved = localStorage.getItem(STORE_KEY);
+                if (saved) {
+                    this.data = JSON.parse(saved);
+                    // Migrations/Checks
+                    if (!this.data.plantings) this.data.plantings = [];
+                    if (!this.data.weather) this.data.weather = [];
+                } else {
+                    this.data = {
+                        areas: [], plantTypes: [
+                            {id: "1", name: "Pomodoro Cuore di Bue"}, {id: "2", name: "Pomodoro Bisteccone"},
+                            {id: "3", name: "Pomodoro Belmonte"}, {id: "4", name: "Pomodorino San Crispino"},
+                            {id: "5", name: "Melanzana Tonda"}, {id: "6", name: "Insalata Canasta"},
+                            {id: "7", name: "Insalata Lattuga"}, {id: "8", name: "Rucola"},
+                            {id: "9", name: "Bietola"}, {id: "10", name: "Spinacio"},
+                            {id: "11", name: "Peperone"}, {id: "12", name: "Basilico"},
+                            {id: "15", name: "Fagiolino Nano"}, {id: "16", name: "Zucchina ad Alberello"},
+                            {id: "17", name: "Cetriolo"}, {id: "18", name: "Mais"},
+                            {id: "19", name: "Cipolla di Tropea"}, {id: "20", name: "Scalogno"},
+                            {id: "21", name: "Aglio Rosso"}, {id: "22", name: "Finocchio"},
+                            {id: "23", name: "Sedano"}, {id: "24", name: "Cavolo Nero"},
+                            {id: "25", name: "Carciofo"}
+                        ], plantings: [], weather: []
+                    };
+                    this.save();
+                }
+            },
+            save() { localStorage.setItem(STORE_KEY, JSON.stringify(this.data)); },
+            
+            // Aree
+            getAreas() { 
+                return this.data.areas.sort((a,b) => (a.order || 0) - (b.order || 0)).map(a => {
+                    if (!a.rows || !a.cols) { a.rows = 3; a.cols = 4; }
+                    return a;
+                });
+            },
+            getArea(id) { 
+                const a = this.data.areas.find(a => a.id === id);
+                if (a && (!a.rows || !a.cols)) { a.rows = 3; a.cols = 4; }
+                return a; 
+            },
+            addArea(area) { 
+                area.id = Date.now().toString(); 
+                area.order = this.data.areas.length + 1;
+                this.data.areas.push(area); 
+                this.save(); 
+            },
+            updateArea(id, updatedData) {
+                const index = this.data.areas.findIndex(a => a.id === id);
+                if (index !== -1) { 
+                    this.data.areas[index] = { ...this.data.areas[index], ...updatedData }; 
+                    this.save(); 
+                }
+            },
+            unmapAll(areaId) {
+                this.data.plantings.forEach(p => {
+                    if (p.areaId === areaId && p.active !== false) p.gridIndex = null;
+                });
+                this.save();
+            },
+
+            // Varietà
+            getPlantTypes() { return this.data.plantTypes.sort((a,b) => a.name.localeCompare(b.name)); },
+            addPlantType(name) {
+                if (this.data.plantTypes.some(p => p.name.toLowerCase() === name.toLowerCase())) return;
+                this.data.plantTypes.push({ id: Date.now().toString(), name });
+                this.save();
+            },
+            removePlantType(id) { this.data.plantTypes = this.data.plantTypes.filter(p => p.id !== id); this.save(); },
+
+            // Coltivazioni
+            getPlantingsByArea(areaId) { return this.data.plantings.filter(p => p.areaId === areaId && p.active !== false); },
+            getPlantingAt(areaId, gridIndex) {
+                return this.data.plantings.find(p => p.areaId === areaId && p.gridIndex === gridIndex && p.active !== false);
+            },
+            getAllActivePlantings() { return this.data.plantings.filter(p => p.active !== false); },
+            getAllPlantings() { return this.data.plantings; },
+            addPlanting(p) {
+                p.id = Date.now().toString() + Math.random();
+                p.active = true;
+                this.data.plantings.push(p);
+                this.save();
+            },
+            updatePlanting(id, updates) {
+                const p = this.data.plantings.find(pl => pl.id == id);
+                if (p) { Object.assign(p, updates); this.save(); }
+            },
+            removePlanting(id, endDate) {
+                const p = this.data.plantings.find(pl => pl.id == id);
+                if (p) { p.active = false; p.endDate = endDate; p.gridIndex = null; this.save(); }
+            },
+            deletePlanting(id) {
+                this.data.plantings = this.data.plantings.filter(p => p.id != id);
+                this.save();
+            },
+            assignPlantingToCell(id, gridIndex) {
+                const p = this.data.plantings.find(pl => pl.id == id);
+                if (!p) return;
+                if (parseInt(p.quantity) > 1) {
+                    p.quantity = parseInt(p.quantity) - 1;
+                    this.addPlanting({ ...p, quantity: 1, gridIndex: gridIndex });
+                } else {
+                    p.gridIndex = gridIndex;
+                }
+                this.save();
+            },
+
+            // Meteo
+            getWeather() { return (this.data.weather || []).sort((a,b) => b.date.localeCompare(a.date)); },
+            addWeather(entry) {
+                if (!this.data.weather) this.data.weather = [];
+                // Se esiste già un dato per la data, lo aggiorniamo invece di aggiungerlo
+                const existingIdx = this.data.weather.findIndex(l => l.date === entry.date);
+                if (existingIdx !== -1) {
+                    this.data.weather[existingIdx] = { ...this.data.weather[existingIdx], ...entry };
+                } else {
+                    entry.id = Date.now().toString();
+                    this.data.weather.push(entry);
+                }
+                this.save();
+            },
+            async fetchDailyWeather() {
+                const today = new Date().toISOString().split('T')[0];
+                const exists = this.data.weather?.some(l => l.date === today);
+                if (exists) return;
+
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=41.64&longitude=13.35&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Europe/Rome&past_days=1`);
+                    const data = await res.json();
+                    
+                    // Prendiamo il valore di "oggi" (indice 1 se past_days=1)
+                    const idx = 1;
+                    const min = data.daily.temperature_2m_min[idx];
+                    const max = data.daily.temperature_2m_max[idx];
+                    const rain = data.daily.precipitation_sum[idx];
+                    const avg = (min + max) / 2;
+
+                    this.addWeather({
+                        date: today,
+                        avgTemp: avg.toFixed(1),
+                        rain: rain.toFixed(1)
+                    });
+                } catch (e) { console.error("Errore fetch meteo", e); }
+            }
+        };
+
+        const Views = {
+            renderOrti(filter = "") {
+                const areas = Store.getAreas().filter(a => a.name.toLowerCase().includes(filter.toLowerCase()));
+                return `
+                    <div class="view-header">
+                        <button id="back-to-home" class="btn-icon"><i class="fa-solid fa-chevron-left"></i></button>
+                        <h2>I Miei Orti</h2>
+                    </div>
+                    <div class="areas-list">
+                        ${areas.length === 0 ? '<p class="empty-msg">Nessun orto aggiunto.</p>' : ''}
+                        ${areas.map(a => this.areaCard(a)).join('')}
+                    </div>
+                    <button id="open-add-area" class="btn-full">Aggiungi un Orto +</button>
+
+                    <div id="modal-area" class="modal hidden">
+                        <div class="modal-content">
+                            <h3 id="modal-title">Nuovo Orto</h3>
+                            <div class="form-group"><label>Tipo</label><select id="area-type"><option value="terra">A Terra</option><option value="rialzato">Rialzato</option></select></div>
+                            <div class="form-group"><label>Nome</label><input type="text" id="area-name"></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>L (m)</label><input type="number" id="area-len" step="0.1"></div>
+                                <div class="form-group"><label>W (m)</label><input type="number" id="area-wid" step="0.1"></div>
+                            </div>
+                            <div id="area-calc" class="calc-preview">Superficie: 0.0 m²</div>
+                            <div class="form-group"><label>Mese/Anno Installazione</label><input type="month" id="area-date"></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Righe (File)</label><input type="number" id="area-rows" min="1" max="10" value="3"></div>
+                                <div class="form-group"><label>Posti per Fila</label><input type="number" id="area-cols" min="1" max="10" value="4"></div>
+                            </div>
+                            <div style="font-size: 11px; color: #666; margin-top: -10px; margin-bottom: 20px;">Totale: <span id="area-total-cells">12</span> caselle</div>
+                            <div class="modal-actions">
+                                <button id="save-area" class="btn-primary">Salva Cambiamenti</button>
+                                <button id="close-modal-area" class="btn-text">Annulla</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            areaCard(a) {
+                const isRaised = a.type === 'rialzato';
+                const iconSrc = isRaised ? 'trowel_icon.png' : 'spade_icon.png';
+                const bgColor = isRaised ? '#94af50' : '#bc6733';
+                const plantings = Store.getPlantingsByArea(a.id);
+                const count = new Set(plantings.map(p => p.plantName)).size;
+                const totalPlants = plantings.reduce((sum, p) => sum + Number(p.quantity || 0), 0);
+                
+                return `
+                    <div class="area-item-card" data-id="${a.id}" style="background-color: ${bgColor}; color: white;">
+                        <div class="area-with-icon" style="flex:1;">
+                            <div class="area-type-icon" style="background: white; border: 2px solid rgba(255,255,255,0.4); overflow: hidden; width: 45px; height: 45px;">
+                                <img src="${iconSrc}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="area-info">
+                                <h4 style="color:white; font-weight:800; font-size: 16px;">${a.name}</h4>
+                                <p style="color:rgba(255,255,255,0.9); font-size: 11px; font-weight: 600;">${count} varietà - ${totalPlants} piantine | ${a.rows}x${a.cols}</p>
+                            </div>
+                        </div>
+                        <button class="btn-edit-area" data-id="${a.id}" style="background:none; border:none; color:white; font-size:18px; padding: 10px;"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </div>
+                `;
+            },
+            renderGrid(areaId) {
+                const a = Store.getArea(areaId);
+                const rows = a.rows || 3, cols = a.cols || 4, total = rows * cols;
+                let html = `<div class="grid-container-title">Mappa dell'Orto (${total} Caselle)</div>`;
+                html += `<div class="garden-grid" style="grid-template-columns: repeat(${cols}, 1fr);">`;
+                for (let i = 0; i < total; i++) {
+                    const p = Store.getPlantingAt(areaId, i);
+                    if (p) {
+                        const isSeme = (p.type || "").toLowerCase() === "seme";
+                        const icon = isSeme ? "fa-seedling" : "fa-leaf";
+                        const color = isSeme ? "#d38b5d" : "#4a5d23";
+                        html += `
+                            <div class="grid-cell occupied" data-index="${i}" data-id="${p.id}" style="border-color:${color}88;">
+                                <div class="grid-cell-num">${i + 1}</div>
+                                <i class="fa-solid ${icon} grid-cell-icon" style="color:${color};"></i>
+                                <div class="grid-cell-name">${p.plantName}</div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="grid-cell empty" data-index="${i}">
+                                <div class="grid-cell-num">${i + 1}</div>
+                            </div>
+                        `;
+                    }
+                }
+                html += '</div>';
+                return html;
+            },
+            renderDettaglio(areaId, filter = "") {
+                const a = Store.getArea(areaId);
+                const active = Store.getPlantingsByArea(areaId).filter(p => p.plantName.toLowerCase().includes(filter.toLowerCase()));
+                const unmapped = active.filter(p => p.gridIndex === null || p.gridIndex === undefined);
+                const isBlocked = unmapped.length > 0;
+                const plants = Store.getPlantTypes();
+
+                return `
+                    <div class="view-header">
+                        <button id="back-to-orti" class="btn-icon"><i class="fa-solid fa-chevron-left"></i></button>
+                        <h2>${a.name}</h2>
+                    </div>
+
+                    ${unmapped.length > 0 ? `
+                        <div style="background:#fff9db; border:1px solid #f59f00; padding:15px; border-radius:12px; margin-bottom:20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                            <h3 style="font-size:14px; margin-bottom:10px; color:#e67700; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">
+                                <i class="fa-solid fa-arrows-to-dot"></i> Riposizionamento Richiesto
+                            </h3>
+                            <p style="font-size:11px; color:#856404; margin-bottom:12px; font-weight:600;">Scegline una e tocca la cella nella griglia sopra per sistemarla:</p>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${unmapped.map(p => `
+                                    <div class="relocate-item ${this.relocatingId === p.id ? 'active-relocating' : ''}" 
+                                         style="background:white; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; border: 2px solid ${this.relocatingId === p.id ? '#ff5252' : '#eee'};">
+                                        <div>
+                                            <div style="font-weight:800; font-size:13px; color:#333;">${p.plantName}</div>
+                                            <div style="font-size:9px; color:#999; font-weight:700; text-transform:uppercase;">Varietà: ${p.type}</div>
+                                        </div>
+                                        <button class="btn-start-relocate" data-id="${p.id}" 
+                                                style="background:${this.relocatingId === p.id ? '#ff5252' : '#4a5d23'}; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer;">
+                                            ${this.relocatingId === p.id ? 'ANNULLA' : 'POSIZIONA'}
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <section class="section-block">${this.renderGrid(areaId)}</section>
+
+                    <section class="section-block">
+                        <h3 class="section-title">Coltivazioni in corso</h3>
+                        <div class="plantings-list">
+                            ${active.length === 0 ? '<p class="empty-msg">Nessuna coltivazione.</p>' : ''}
+                            ${active.map(p => {
+                                const m = p.gridIndex !== null && p.gridIndex !== undefined;
+                                return `
+                                    <div class="planting-item">
+                                        <div class="p-row" data-id="${p.id}" style="flex:1;">
+                                            <span class="p-name">${p.plantName}</span>
+                                            <span class="p-type-badge">${p.type}</span>
+                                            ${!m ? `<span class="btn-map-fast" data-id="${p.id}" style="color:#ff5252; font-size:9px; font-weight:800; cursor:pointer;">[NON MAPPATA]</span>` : `<span style="font-size:9px; color:#8da372;">Cella ${Number(p.gridIndex)+1}</span>`}
+                                            <div class="p-date">Messa a dimora: ${Utils.formatDate(p.date)}</div>
+                                        </div>
+                                        <div style="display:flex; gap:10px; align-items:center;">
+                                            <span class="p-qty">x${p.quantity}</span>
+                                            <button class="btn-del-error" data-id="${p.id}" style="border:none; background:none; color:#ff5252;"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <button id="open-add-planting" class="btn-full" ${isBlocked ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>Metti a dimora nuove piantine +</button>
+                        <button id="show-history" class="btn-full" style="background:#f0f0f0; border-style:solid; border-color:#ccc; color:#666;">Vedi Storico Estirpate</button>
+                        <div id="history-container" class="hidden" style="margin-top:15px; border-top:1px dashed #ccc; padding-top:15px;"></div>
+                    </section>
+
+                    <div id="modal-planting" class="modal hidden">
+                        <div class="modal-content">
+                            <h3>Nuovo Inserimento</h3>
+                            <div class="form-group"><label>Cosa piantiamo?</label>
+                                <select id="p-select-variety">${plants.map(p=>`<option value="${p.name}">${p.name}</option>`).join('')}</select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Stato</label><select id="p-select-type"><option value="Piantina">Piantina</option><option value="Seme">Seme</option></select></div>
+                                <div class="form-group"><label>Quantità</label><input type="number" id="p-input-qty" value="1"></div>
+                            </div>
+                            <div class="form-group"><label>Data</label><input type="date" id="p-input-date"></div>
+                            <div class="form-group"><label>Posizione (Opzionale)</label>
+                                <select id="p-select-grid"><option value="">Solo in lista</option></select>
+                            </div>
+                            <div class="modal-actions">
+                                <button id="save-planting" class="btn-primary">Salva nel Registro</button>
+                                <button id="close-modal-p" class="btn-text">Annulla</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            renderPiante(filter = "") {
+                const plantings = Store.getAllActivePlantings().filter(p => p.plantName.toLowerCase().includes(filter.toLowerCase()));
+                const areas = Store.getAreas();
+                const summary = {};
+                plantings.forEach(p => {
+                    if (!summary[p.plantName]) summary[p.plantName] = { total: 0, areas: [] };
+                    summary[p.plantName].total += Number(p.quantity);
+                    const aName = areas.find(a => a.id === p.areaId)?.name || "?";
+                    if (!summary[p.plantName].areas.includes(aName)) summary[p.plantName].areas.push(aName);
+                });
+                return `
+                    <div class="view-header"><h2>Riepilogo Piante</h2></div>
+                    ${Object.keys(summary).sort().map(name => `
+                        <div class="plant-summary-card">
+                            <div class="p-sum-header"><span class="p-sum-name">${name}</span><span class="p-sum-total">Totale: ${summary[name].total}</span></div>
+                            <div class="p-sum-details">Presente in: ${summary[name].areas.join(', ')}</div>
+                        </div>
+                    `).join('')}
+                    ${plantings.length === 0 ? '<p class="empty-msg">Nessuna pianta attiva.</p>' : ''}
+                `;
+            },
+            renderCatalog(filter = "") {
+                const plants = Store.getPlantTypes().filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+                return `
+                    <div class="view-header"><h2>Catalogo Varietà</h2></div>
+                    <div class="catalog-manager">
+                        ${plants.map(p => `<div class="catalog-item"><span class="catalog-item-name">${p.name}</span><button class="btn-del-variety" data-id="${p.id}" style="border:none;background:none;color:#ff5252;"><i class="fa-solid fa-trash-can"></i></button></div>`).join('')}
+                    </div>
+                    <button id="add-variety" class="fab"><i class="fa-solid fa-plus"></i></button>
+                `;
+            },
+            renderMeteo() {
+                const logs = Store.getWeather();
+                if (logs.length === 0) return `
+                    <div class="view-header" style="background-color: #4a5d23; justify-content: center;">
+                        <h2 style="color: white; margin: 0;">Dati Meteo Frosinone</h2>
+                    </div>
+                    <p class="empty-msg">Nessun dato registrato. I dati verranno scaricati automaticamente.</p>
+                `;
+
+                // 1. OGGI / ULTIMA RILEVAZIONE
+                const todayLog = logs[0];
+                const tValueToday = todayLog.avgTemp || ((Number(todayLog.min)+Number(todayLog.max))/2);
+                const todayTColor = Utils.getWeatherColor(Number(tValueToday), 'temp', todayLog.date);
+                const todayRColor = Utils.getWeatherColor(Number(todayLog.rain), 'rain', todayLog.date);
+
+                // 2. RAGGRUPPAMENTO
+                const groups = {};
+                logs.forEach(l => {
+                    const d = new Date(l.date);
+                    const y = d.getFullYear();
+                    const m = d.toLocaleString('it-IT', { month: 'long' }).toUpperCase();
+                    if (!groups[y]) groups[y] = {};
+                    if (!groups[y][m]) groups[y][m] = [];
+                    groups[y][m].push(l);
+                });
+
+                const years = Object.keys(groups).sort((a,b) => b - a);
+
+                return `
+                    <div class="view-header" style="background-color: #4a5d23; justify-content: center;">
+                        <h2 style="color: white; margin: 0;">Dati Meteo Frosinone</h2>
+                    </div>
+
+                    <!-- EVIDENZA OGGI -->
+                    <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #eee; text-align: center;">
+                        <div style="font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Oggi / Ultima Rilevazione</div>
+                        <div style="font-size: 16px; font-weight: 800; color: #333; margin-bottom: 18px;">${Utils.formatDate(todayLog.date)}</div>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-temperature-half" style="font-size: 26px; color: #bc6733;"></i>
+                                <div style="background: ${todayTColor}; padding: 8px 18px; border-radius: 20px; font-weight: 800; font-size: 18px; min-width: 85px; text-align: center; border: 1px solid rgba(0,0,0,0.05); color: #333;">
+                                    ${Number(tValueToday).toFixed(1)}°C
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-cloud-rain" style="font-size: 26px; color: #4a5d23;"></i>
+                                <div style="background: ${todayRColor}; padding: 8px 18px; border-radius: 20px; font-weight: 800; font-size: 18px; min-width: 85px; text-align: center; border: 1px solid rgba(0,0,0,0.05); color: ${Number(todayLog.rain) > 3 ? 'white' : '#333'};">
+                                    ${todayLog.rain} mm
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="plantings-list" style="margin-top: 10px;">
+                        ${years.map(y => `
+                            <div class="weather-year-section">
+                                <h3 style="font-size: 18px; color: var(--header-bg); border-bottom: 2px solid var(--header-bg); margin: 25px 0 15px 0; text-align:center; font-weight:800;">${y}</h3>
+                                ${Object.keys(groups[y]).map(m => {
+                                    const mLogs = groups[y][m];
+                                    const avgT = (mLogs.reduce((acc, curr) => acc + Number(curr.avgTemp || (Number(curr.min)+Number(curr.max))/2), 0) / mLogs.length).toFixed(1);
+                                    const avgR = (mLogs.reduce((acc, curr) => acc + Number(curr.rain), 0) / mLogs.length).toFixed(1);
+                                    
+                                    const mDateI = mLogs[0].date;
+                                    const mtC = Utils.getWeatherColor(Number(avgT), 'temp', mDateI);
+                                    const mrC = Utils.getWeatherColor(Number(avgR), 'rain', mDateI);
+
+                                    return `
+                                        <div class="month-accordion" data-month="${m}-${y}">
+                                            <div class="month-summary-card" style="background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); cursor: pointer; border-left: 5px solid #4a5d23; text-align: center;">
+                                                <div style="display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 15px;">
+                                                    <h4 style="font-size: 15px; margin: 0; font-weight: 800; color: #333; text-transform: uppercase; letter-spacing: 1px;">${m}</h4>
+                                                    <i class="fa-solid fa-chevron-down" style="position: absolute; right: 0; font-size: 14px; color: #999;"></i>
+                                                </div>
+                                                <div style="display: flex; gap: 25px; justify-content: center; align-items: center; font-size: 11px; font-weight: 700; margin-top: 5px;">
+                                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                                                        <i class="fa-solid fa-temperature-half" style="font-size: 22px; color: #bc6733;"></i>
+                                                        <span style="background: ${mtC}; padding: 5px 15px; border-radius: 15px; color: #333; border: 1px solid rgba(0,0,0,0.05); min-width: 75px; text-align: center;">${avgT}°C</span>
+                                                    </div>
+                                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                                                        <i class="fa-solid fa-cloud-rain" style="font-size: 22px; color: #4a5d23;"></i>
+                                                        <span style="background: ${mrC}; padding: 5px 15px; border-radius: 15px; color: ${Number(avgR) > 3 ? 'white' : '#333'}; border: 1px solid rgba(0,0,0,0.05); min-width: 75px; text-align: center;">${avgR} mm</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="month-details hidden" style="margin-bottom: 18px; padding: 0 5px;">
+                                                <!-- HEADERS TABELLA -->
+                                                <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px; margin-bottom: 12px; opacity: 0.5; font-size: 9px; font-weight: 800; color: #4a5d23; letter-spacing: 1px;">
+                                                    <div style="flex: 1; text-align: left;">DATA</div>
+                                                    <div style="flex: 1.5; text-align: center;">TEMPERATURA</div>
+                                                    <div style="flex: 1.5; text-align: center;">PIOGGIA</div>
+                                                </div>
+                                                
+                                                ${mLogs.map(l => {
+                                                    const t = l.avgTemp || ((Number(l.min)+Number(l.max))/2);
+                                                    const tc = Utils.getWeatherColor(Number(t), 'temp', l.date);
+                                                    const rc = Utils.getWeatherColor(Number(l.rain), 'rain', l.date);
+                                                    return `
+                                                        <div class="planting-item" style="display: flex; align-items: center; justify-content: center; padding: 12px 10px; margin-bottom: 8px; border: none; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-radius:10px;">
+                                                            <div style="flex: 1; text-align: left; font-size: 11px; font-weight: 800; color: #999;">${Utils.formatDate(l.date).split('/')[0]}/${Utils.formatDate(l.date).split('/')[1]}</div>
+                                                            <div style="flex: 1.5; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                                                <i class="fa-solid fa-temperature-half" style="font-size: 16px; color: #bc6733; opacity: 0.8;"></i>
+                                                                <div style="background: ${tc}; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 12px; min-width: 65px; text-align: center; border: 1px solid rgba(0,0,0,0.05); color: #333;">
+                                                                    ${Number(t).toFixed(1)}°C
+                                                                </div>
+                                                            </div>
+                                                            <div style="flex: 1.5; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                                                <i class="fa-solid fa-cloud-rain" style="font-size: 16px; color: #4a5d23; opacity: 0.8;"></i>
+                                                                <div style="background: ${rc}; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 12px; min-width: 65px; text-align: center; border: 1px solid rgba(0,0,0,0.05); color: ${Number(l.rain) > 3 ? 'white' : '#333'};">
+                                                                    ${l.rain} mm
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+            renderCalendario() {
+                const all = Store.getAllPlantings().sort((a,b) => b.date.localeCompare(a.date));
+                const areas = Store.getAreas();
+                return `
+                    <div class="view-header"><h2>Storico Semine</h2></div>
+                    <div class="plantings-list">
+                        ${all.map(p => `
+                            <div class="planting-item">
+                                <div style="flex:1">
+                                    <div class="p-name">${p.plantName} x${p.quantity}</div>
+                                    <div style="font-size:10px; color:#999">${areas.find(a=>a.id===p.areaId)?.name || 'Area eliminata'} | ${Utils.formatDate(p.date)}</div>
+                                </div>
+                                ${!p.active ? `<span style="color:#ff5252; font-size:10px; font-weight:700;">[ESTIRPATA]</span>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+            renderImpostazioni() {
+                return `
+                    <div class="view-header"><h2>Impostazioni</h2></div>
+                    <button id="reset-db" class="btn-full" style="color:#ff5252; border-color:#ff5252;">Reset Totale Database</button>
+                `;
+            }
+        };
+
+        const App = {
+            currentAreaId: null,
+            editingAreaId: null,
+            currentGridIndex: null,
+            init() { Store.init(); this.initListeners(); this.updateHome(); },
+            updateHome() {
+                const count = Store.getAllActivePlantings().length;
+                const el = document.getElementById('home-active-count');
+                if (el) el.innerText = `${count} piante in crescita`;
+            },
+            showView(name, params = {}) {
+                const home = document.getElementById('home-view'), dyn = document.getElementById('dynamic-view');
+                const s = document.getElementById('global-search').value;
+                if (name === 'home') { home.classList.remove('hidden'); dyn.classList.add('hidden'); this.updateHome(); }
+                else {
+                    home.classList.add('hidden'); dyn.classList.remove('hidden');
+                    if (name === 'orti') { dyn.innerHTML = Views.renderOrti(s); this.bindOrti(); }
+                    else if (name === 'dettaglio') { this.currentAreaId = params.id; dyn.innerHTML = Views.renderDettaglio(params.id, s); this.bindDettaglio(); }
+                    else if (name === 'piante') { dyn.innerHTML = Views.renderPiante(s); }
+                    else if (name === 'catalogo') { dyn.innerHTML = Views.renderCatalog(s); this.bindCatalog(); }
+                    else if (name === 'meteo') { 
+                        dyn.innerHTML = Views.renderMeteo(); // Render immediately with existing logs
+                        Store.fetchDailyWeather().then(() => { 
+                            if (document.querySelector('.view-header h2')?.innerText === 'Dati Meteo Frosinone') {
+                                dyn.innerHTML = Views.renderMeteo(); 
+                            }
+                        });
+                    }
+                    else if (name === 'calendario') { dyn.innerHTML = Views.renderCalendario(); }
+                    else if (name === 'impostazioni') { dyn.innerHTML = Views.renderImpostazioni(); this.bindSettings(); }
+                }
+            },
+            initListeners() {
+                document.querySelectorAll('.nav-item').forEach(btn => btn.onclick = () => {
+                    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active'); this.showView(btn.dataset.view);
+                });
+                document.getElementById('btn-goto-orti').onclick = () => { 
+                    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-view="home"]').classList.add('active'); // Still in home tab context
+                    this.showView('orti'); 
+                };
+                document.getElementById('btn-goto-meteo').onclick = () => { this.showView('meteo'); };
+                document.getElementById('btn-goto-catalog').onclick = () => { this.showView('catalogo'); };
+                document.getElementById('global-search').oninput = () => {
+                    const active = document.querySelector('.nav-item.active').dataset.view;
+                    this.showView(active === 'home' ? 'orti' : active, {id: this.currentAreaId});
+                };
+            },
+            bindOrti() {
+                const modal = document.getElementById('modal-area');
+                document.getElementById('back-to-home').onclick = () => this.showView('home');
+                document.getElementById('open-add-area').onclick = () => {
+                    this.editingAreaId = null; document.getElementById('modal-title').innerText = "Nuovo Orto";
+                    ['area-name','area-len','area-wid','area-date'].forEach(i=>document.getElementById(i).value="");
+                    modal.classList.remove('hidden');
+                };
+                document.getElementById('close-modal-area').onclick = () => modal.classList.add('hidden');
+                document.querySelectorAll('.area-item-card').forEach(card => card.onclick = (e) => {
+                    if (e.target.closest('.btn-edit-area')) return;
+                    this.showView('dettaglio', {id: card.dataset.id});
+                });
+                document.querySelectorAll('.btn-edit-area').forEach(btn => btn.onclick = () => {
+                    this.editingAreaId = btn.dataset.id;
+                    const a = Store.getArea(this.editingAreaId);
+                    document.getElementById('modal-title').innerText = "Modifica Orto";
+                    document.getElementById('area-type').value = a.type;
+                    document.getElementById('area-name').value = a.name;
+                    document.getElementById('area-len').value = a.length;
+                    document.getElementById('area-wid').value = a.width;
+                    document.getElementById('area-rows').value = a.rows;
+                    document.getElementById('area-cols').value = a.cols;
+                    document.getElementById('area-date').value = a.date;
+                    modal.classList.remove('hidden');
+                });
+                document.getElementById('save-area').onclick = () => {
+                    const data = {
+                        type: document.getElementById('area-type').value,
+                        name: document.getElementById('area-name').value,
+                        length: document.getElementById('area-len').value,
+                        width: document.getElementById('area-wid').value,
+                        rows: parseInt(document.getElementById('area-rows').value),
+                        cols: parseInt(document.getElementById('area-cols').value),
+                        date: document.getElementById('area-date').value
+                    };
+                    if (!data.name || !data.rows || !data.cols) return alert("Compila i campi obbligatori!");
+                    if (this.editingAreaId) {
+                        const old = Store.getArea(this.editingAreaId);
+                        if (old.rows != data.rows || old.cols != data.cols) {
+                            if (confirm("Cambio griglia! Le posizioni attuali saranno resettate. Continuare?")) Store.unmapAll(this.editingAreaId);
+                            else return;
+                        }
+                        Store.updateArea(this.editingAreaId, data);
+                    } else Store.addArea(data);
+                    modal.classList.add('hidden'); this.showView('orti');
+                };
+                
+                const calc = () => {
+                    const l = document.getElementById('area-len').value, w = document.getElementById('area-wid').value;
+                    document.getElementById('area-calc').innerText = `Superficie: ${(l*w).toFixed(1)} m²`;
+                    const r = document.getElementById('area-rows').value, c = document.getElementById('area-cols').value;
+                    document.getElementById('area-total-cells').innerText = r * c;
+                };
+                ['area-len','area-wid','area-rows','area-cols'].forEach(id => document.getElementById(id).oninput = calc);
+            },
+            bindDettaglio() {
+                const modal = document.getElementById('modal-planting');
+                document.getElementById('back-to-orti').onclick = () => this.showView('orti');
+                document.getElementById('open-add-planting').onclick = () => {
+                    this.currentGridIndex = null; this.preparePModal();
+                };
+                document.querySelectorAll('.grid-cell.empty').forEach(cell => cell.onclick = () => {
+                    this.currentGridIndex = parseInt(cell.dataset.index); this.preparePModal();
+                });
+                document.querySelectorAll('.grid-cell.occupied').forEach(cell => cell.onclick = () => {
+                    this.showPlantingDetail(cell.dataset.id);
+                });
+                document.querySelectorAll('.p-row').forEach(row => row.onclick = () => this.showPlantingDetail(row.dataset.id));
+                document.getElementById('close-modal-p').onclick = () => modal.classList.add('hidden');
+                document.getElementById('save-planting').onclick = () => {
+                    const p = {
+                        areaId: this.currentAreaId,
+                        plantName: document.getElementById('p-select-variety').value,
+                        type: document.getElementById('p-select-type').value,
+                        quantity: parseInt(document.getElementById('p-input-qty').value),
+                        date: document.getElementById('p-input-date').value,
+                        gridIndex: document.getElementById('p-select-grid').value !== "" ? parseInt(document.getElementById('p-select-grid').value) : null
+                    };
+                    if (!p.plantName || !p.date) return alert("Dati mancanti!");
+                    
+                    if (p.gridIndex !== null) {
+                        Store.addPlanting({ ...p, quantity: 1 });
+                        if (p.quantity > 1) Store.addPlanting({ ...p, quantity: p.quantity - 1, gridIndex: null });
+                    } else {
+                        Store.addPlanting(p);
+                    }
+                    modal.classList.add('hidden'); this.showView('dettaglio', {id: this.currentAreaId});
+                };
+                document.querySelectorAll('.btn-map-fast').forEach(btn => btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const target = prompt("In quale cella? (1-" + (Store.getArea(this.currentAreaId).rows * Store.getArea(this.currentAreaId).cols) + ")");
+                    if (target) {
+                        const idx = parseInt(target) - 1;
+                        if (Store.getPlantingAt(this.currentAreaId, idx)) return alert("Cella occupata!");
+                        Store.assignPlantingToCell(btn.dataset.id, idx);
+                        this.showView('dettaglio', {id: this.currentAreaId});
+                    }
+                });
+                document.querySelectorAll('.btn-del-error').forEach(btn => btn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm("ELIMINA ERRORE: vuoi cancellare definitivamente questa riga? (Statistiche non sporcate)")) {
+                        Store.deletePlanting(btn.dataset.id); this.showView('dettaglio', {id: this.currentAreaId});
+                    }
+                });
+                document.getElementById('show-history').onclick = () => {
+                    const container = document.getElementById('history-container');
+                    if (!container.classList.contains('hidden')) { container.classList.add('hidden'); return; }
+                    const historical = Store.getAllPlantings().filter(p => p.areaId === this.currentAreaId && !p.active);
+                    if (historical.length === 0) return alert("Vuoto!");
+                    container.innerHTML = historical.map(p => `
+                        <div class="planting-item" style="opacity:0.7;">
+                            <div style="flex:1">
+                                <div class="p-name">${p.plantName} x${p.quantity}</div>
+                                <div class="p-date">Fine: ${Utils.formatDate(p.endDate)}</div>
+                            </div>
+                            <button class="btn-del-error" data-id="${p.id}" style="border:none;background:none;color:#ff5252;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `).join('');
+                    container.classList.remove('hidden');
+                    container.querySelectorAll('.btn-del-error').forEach(b => b.onclick = () => {
+                        Store.deletePlanting(b.dataset.id); this.showView('dettaglio', {id: this.currentAreaId});
+                    });
+                };
+            },
+            preparePModal() {
+                const modal = document.getElementById('modal-planting');
+                const a = Store.getArea(this.currentAreaId);
+                const select = document.getElementById('p-select-grid');
+                select.innerHTML = '<option value="">Solo in lista</option>';
+                for (let i = 0; i < a.rows * a.cols; i++) {
+                    const occ = Store.getPlantingAt(this.currentAreaId, i);
+                    select.innerHTML += `<option value="${i}" ${occ ? 'disabled style="color:#ccc;"' : ''}>Casella ${i+1} ${occ ? '('+occ.plantName+')' : ''}</option>`;
+                }
+                if (this.currentGridIndex !== null) select.value = this.currentGridIndex;
+                document.getElementById('p-input-date').valueAsDate = new Date();
+                modal.classList.remove('hidden');
+            },
+            showPlantingDetail(id) {
+                const p = Store.getAllPlantings().find(x => x.id == id);
+                if (!p) return;
+                this.currentPlantingId = id;
+                document.getElementById('det-title').innerText = p.plantName;
+                document.getElementById('det-type').value = p.type;
+                document.getElementById('det-start').value = p.date;
+                document.getElementById('det-end').value = p.endDate || "";
+                document.getElementById('det-notes').value = p.notes || "";
+                document.getElementById('modal-planting-detail').classList.remove('hidden');
+                
+                document.getElementById('close-det').onclick = () => document.getElementById('modal-planting-detail').classList.add('hidden');
+                document.getElementById('save-det').onclick = () => {
+                    Store.updatePlanting(id, {
+                        type: document.getElementById('det-type').value,
+                        date: document.getElementById('det-start').value,
+                        endDate: document.getElementById('det-end').value,
+                        notes: document.getElementById('det-notes').value
+                    });
+                    document.getElementById('modal-planting-detail').classList.add('hidden');
+                    this.showView('dettaglio', {id: this.currentAreaId});
+                };
+                document.getElementById('estirpa-det').onclick = () => {
+                    const d = prompt("Data di fine ciclo?", new Date().toISOString().split('T')[0]);
+                    if (d) { 
+                        Store.removePlanting(id, d);
+                        document.getElementById('modal-planting-detail').classList.add('hidden');
+                        this.showView('dettaglio', {id: this.currentAreaId});
+                    }
+                };
+            },
+            bindCatalog() {
+                document.getElementById('add-variety').onclick = () => {
+                    const n = prompt("Nuova Varietà?");
+                    if (n) { Store.addPlantType(n); this.showView('catalogo'); }
+                };
+                document.querySelectorAll('.btn-del-variety').forEach(b => b.onclick = () => {
+                    if (confirm("Eliminare dal catalogo?")) { Store.removePlantType(b.dataset.id); this.showView('catalogo'); }
+                });
+            },
+            bindMeteo() {
+                document.querySelectorAll('.month-summary-card').forEach(card => {
+                    card.onclick = () => {
+                        const details = card.nextElementSibling;
+                        const icon = card.querySelector('i.fa-solid');
+                        if (details.classList.contains('hidden')) {
+                            details.classList.remove('hidden');
+                            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        } else {
+                            details.classList.add('hidden');
+                            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                        }
+                    };
+                });
+            },
+            bindSettings() {
+                document.getElementById('reset-db').onclick = () => {
+                    if (confirm("ELIMINA TUTTO?") && confirm("SICURO?")) {
+                        localStorage.removeItem(STORE_KEY); location.reload();
+                    }
+                };
+            }
+        };
+
+        App.init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "L'orto di Vittoria",
+  "short_name": "Orto Vittoria",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fcfbf3",
+  "theme_color": "#1b5e20",
+  "description": "Gestione intelligente per orti e coltivazioni.",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
