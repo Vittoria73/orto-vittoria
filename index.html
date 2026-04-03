@@ -331,6 +331,10 @@
                             <div class="func-icon-container"><i class="fa-solid fa-book func-icon"></i></div>
                             <div class="func-text"><h3>CATALOGO VARIETÀ</h3><p>Personalizza l'elenco piante.</p></div>
                         </button>
+                        <button class="function-card" id="btn-goto-raccolti" style="background-color: #bc6733; color: white;">
+                            <div class="func-icon-container"><i class="fa-solid fa-basket-shopping func-icon" style="color: white;"></i></div>
+                            <div class="func-text"><h3 style="color: white;">I MIEI RACCOLTI</h3><p style="color: rgba(255,255,255,0.9);">Storico delle coltivazioni passate.</p></div>
+                        </button>
                     </div>
                 </section>
             </div>
@@ -913,6 +917,19 @@
                     </div>
                 `;
             },
+            renderRaccolti() {
+                return `
+                    <div class="view-header">
+                        <button id="back-to-home-rac" class="btn-icon"><i class="fa-solid fa-chevron-left"></i></button>
+                        <h2>I Miei Raccolti</h2>
+                    </div>
+                    <div style="padding:20px; text-align:center; color:#666; font-size:14px; margin-top:50px;">
+                        <i class="fa-solid fa-basket-shopping" style="font-size:40px; color:#bc6733; margin-bottom:15px;"></i>
+                        <p>Storico delle tue coltivazioni passate.</p>
+                        <p style="font-weight:700; margin-top:10px;">Funzione in arrivo!</p>
+                    </div>
+                `;
+            },
             renderImpostazioni() {
                 return `
                     <div class="view-header"><h2>Impostazioni</h2></div>
@@ -942,6 +959,10 @@
                     else if (name === 'dettaglio') { this.currentAreaId = params.id; dyn.innerHTML = Views.renderDettaglio(params.id, s); this.bindDettaglio(); }
                     else if (name === 'piante') { dyn.innerHTML = Views.renderPiante(s); }
                     else if (name === 'catalogo') { dyn.innerHTML = Views.renderCatalog(s); this.bindCatalog(); }
+                    else if (name === 'raccolti') { 
+                        dyn.innerHTML = Views.renderRaccolti(); 
+                        document.getElementById('back-to-home-rac').onclick = () => this.showView('home'); 
+                    }
                     else if (name === 'meteo') { 
                         dyn.innerHTML = Views.renderMeteo(); // Render immediately with existing logs
                         Store.fetchDailyWeather().then(() => { 
@@ -966,6 +987,7 @@
                 };
                 document.getElementById('btn-goto-meteo').onclick = () => { this.showView('meteo'); };
                 document.getElementById('btn-goto-catalog').onclick = () => { this.showView('catalogo'); };
+                document.getElementById('btn-goto-raccolti').onclick = () => { this.showView('raccolti'); };
                 document.getElementById('global-search').oninput = () => {
                     const active = document.querySelector('.nav-item.active').dataset.view;
                     this.showView(active === 'home' ? 'orti' : active, {id: this.currentAreaId});
