@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orto-vittoria-v6';
+const CACHE_NAME = 'orto-vittoria-v7';
 const ASSETS = [
   './',
   './index.html',

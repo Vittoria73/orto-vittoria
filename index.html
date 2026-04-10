@@ -305,7 +305,7 @@
                             <span class="card-title">Allerte</span>
                             <span class="card-subtitle">Zero allerte</span>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" id="btn-open-forecast" style="cursor: pointer; transition: transform 0.1s;">
                             <i class="fa-solid fa-cloud-sun icon-weather"></i>
                             <span class="card-title">Previsioni</span>
                             <span class="card-subtitle">Frosinone</span>
@@ -361,6 +361,20 @@
                     <button id="save-det" class="btn-primary">Salva Modifiche</button>
                     <button id="estirpa-det" class="btn-primary" style="background-color: #bc6733;"><i class="fa-solid fa-scissors"></i> Estirpa / Fine Ciclo</button>
                     <button id="close-det" class="btn-text">Chiudi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Forecast -->
+        <div id="modal-forecast" class="modal hidden">
+            <div class="modal-content">
+                <h3 style="margin-bottom: 5px; color: var(--header-bg); font-weight: 800; font-family: 'Caveat', cursive; font-size: 26px; text-align: center;">Previsioni Meteo</h3>
+                <p style="text-align: center; color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">Frosinone</p>
+                <div id="forecast-content" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="text-align:center; padding: 20px; color:#999;"><i class="fa-solid fa-spinner fa-spin"></i> Caricamento...</div>
+                </div>
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button id="close-modal-forecast" class="btn-primary">Chiudi</button>
                 </div>
             </div>
         </div>
@@ -567,6 +581,15 @@
                         rain: rain.toFixed(1)
                     });
                 } catch (e) { console.error("Errore fetch meteo", e); }
+            },
+            async getForecast() {
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=41.64&longitude=13.35&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Europe/Rome&forecast_days=4`);
+                    return await res.json();
+                } catch (e) {
+                    console.error("Errore fetch forecast", e);
+                    return null;
+                }
             }
         };
 
@@ -1036,6 +1059,61 @@
                     const active = document.querySelector('.nav-item.active').dataset.view;
                     this.showView(active === 'home' ? 'orti' : active, {id: this.currentAreaId});
                 };
+
+                // Binding for new Forecast component
+                const btnOpenForecast = document.getElementById('btn-open-forecast');
+                if (btnOpenForecast) {
+                    btnOpenForecast.onclick = async () => {
+                        document.getElementById('modal-forecast').classList.remove('hidden');
+                        const content = document.getElementById('forecast-content');
+                        content.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;"><i class="fa-solid fa-spinner fa-spin"></i> Caricamento...</div>';
+                        const data = await Store.getForecast();
+                        if (!data) {
+                            content.innerHTML = '<p style="color:red; text-align:center; font-weight: bold;">Errore: controlla la connessione internet.</p>';
+                            return;
+                        }
+                        
+                        const codeToIcon = (c) => {
+                            if (c <= 1) return '<i class="fa-solid fa-sun" style="color:#ffb703;"></i>';
+                            if (c <= 3) return '<i class="fa-solid fa-cloud-sun" style="color:#87ceeb;"></i>';
+                            if (c <= 49) return '<i class="fa-solid fa-cloud" style="color:#aaa;"></i>';
+                            if (c <= 69) return '<i class="fa-solid fa-cloud-rain" style="color:#4a5d23;"></i>';
+                            if (c <= 79) return '<i class="fa-regular fa-snowflake" style="color:#87ceeb;"></i>';
+                            return '<i class="fa-solid fa-cloud-showers-heavy" style="color:#1b5e20;"></i>';
+                        };
+
+                        let html = '';
+                        const days = ['Oggi', 'Domani', 'Dopodomani', 'Tra 3 giorni'];
+                        for (let i = 0; i < data.daily.time.length; i++) {
+                            const date = Utils.formatDate(data.daily.time[i]);
+                            const min = data.daily.temperature_2m_min[i].toFixed(1);
+                            const max = data.daily.temperature_2m_max[i].toFixed(1);
+                            const rain = data.daily.precipitation_sum[i];
+                            const icon = codeToIcon(data.daily.weathercode[i]);
+                            html += `
+                                <div style="background:#fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid #eee; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                                    <div>
+                                        <div style="font-weight:800; font-size:15px; color:#333;">${days[i] || date} <span style="font-size:11px; color:#999; font-weight:600; margin-left: 5px;">${date.substring(0, 5)}</span></div>
+                                        <div style="font-size:12px; color:#666; margin-top:8px; display: flex; align-items: center; gap: 12px; font-weight: 700;">
+                                            <span><i class="fa-solid fa-temperature-arrow-down" style="color:#64b5f6;"></i> ${min}°</span>
+                                            <span><i class="fa-solid fa-temperature-arrow-up" style="color:#ef5350;"></i> ${max}°</span>
+                                            ${rain > 0 ? `<span style="background: #e3f2fd; padding: 2px 6px; border-radius: 6px; color: #1565c0;"><i class="fa-solid fa-droplet"></i> ${rain} mm</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 32px;">${icon}</div>
+                                </div>
+                            `;
+                        }
+                        content.innerHTML = html;
+                    };
+                }
+
+                const closeForecast = document.getElementById('close-modal-forecast');
+                if (closeForecast) {
+                    closeForecast.onclick = () => {
+                        document.getElementById('modal-forecast').classList.add('hidden');
+                    };
+                }
             },
             bindOrti() {
                 const modal = document.getElementById('modal-area');
