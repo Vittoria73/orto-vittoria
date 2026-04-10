@@ -259,7 +259,9 @@
         /* NAVIGAZIONE BOTTOM */
         .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; background-color: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 10; }
         .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--nav-inactive); font-size: 10px; cursor: pointer; width: 25%; }
-        .nav-item.active { color: var(--nav-active); }
+        .nav-item i { font-size: 24px; margin-bottom: 2px; transition: transform 0.2s; }
+        .nav-item.active { color: var(--nav-active); font-weight: 800; }
+        .nav-item.active i { transform: scale(1.1); text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
         .area-detail-summary { background: white; padding: 15px; border-radius: var(--border-radius-md); margin-bottom: 20px; font-size: 13px; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .fab { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 28px; background-color: var(--header-bg); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 100; }
