@@ -832,10 +832,14 @@
                     
                     <div class="plantings-list" style="margin-top: 10px;">
                         ${years.map(y => `
-                            <div class="weather-year-section">
-                                <h3 style="font-size: 18px; color: var(--header-bg); border-bottom: 2px solid var(--header-bg); margin: 25px 0 15px 0; text-align:center; font-weight:800;">${y}</h3>
-                                ${Object.keys(groups[y]).map(m => {
-                                    const mLogs = groups[y][m];
+                            <div class="weather-year-section" style="margin-bottom: 20px;">
+                                <div class="year-summary-card" style="background: var(--header-bg); color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                                    <h3 style="font-size: 18px; margin: 0; font-weight: 800; letter-spacing: 1px;">${y}</h3>
+                                    <i class="fa-solid fa-chevron-down year-icon" style="font-size: 14px;"></i>
+                                </div>
+                                <div class="year-details hidden" style="padding-top: 15px; margin-left: 10px; margin-right: 10px; border-left: 2px dashed #ccc; padding-left: 10px;">
+                                    ${Object.keys(groups[y]).map(m => {
+                                        const mLogs = groups[y][m];
                                     const avgT = (mLogs.reduce((acc, curr) => acc + Number(curr.avgTemp || (Number(curr.min)+Number(curr.max))/2), 0) / mLogs.length).toFixed(1);
                                     const avgR = (mLogs.reduce((acc, curr) => acc + Number(curr.rain), 0) / mLogs.length).toFixed(1);
                                     
@@ -896,6 +900,7 @@
                                         </div>
                                     `;
                                 }).join('')}
+                                </div>
                             </div>
                         `).join('')}
                     </div>
@@ -945,13 +950,45 @@
             editingAreaId: null,
             currentGridIndex: null,
             relocatingId: null, // ID della pianta in trasloco
-            init() { Store.init(); this.initListeners(); this.updateHome(); },
+            init() { 
+                Store.init(); 
+                this.initListeners(); 
+                this.updateHome(); 
+                
+                // Imposta la navigazione per catturare il tasto indietro
+                history.replaceState({ view: 'home', params: {} }, '', '#home');
+                
+                window.addEventListener('popstate', (event) => {
+                    if (event.state && event.state.view) {
+                        this.showView(event.state.view, event.state.params || {}, false);
+                    } else {
+                        this.showView('home', {}, false);
+                    }
+                });
+            },
             updateHome() {
                 const count = Store.getAllActivePlantings().length;
                 const el = document.getElementById('home-active-count');
                 if (el) el.innerText = `${count} piante in crescita`;
             },
-            showView(name, params = {}) {
+            showView(name, params = {}, pushHistory = true) {
+                if (pushHistory) {
+                    if (!history.state || history.state.view !== name || JSON.stringify(history.state.params) !== JSON.stringify(params)) {
+                        history.pushState({ view: name, params: params }, '', `#${name}`);
+                    }
+                }
+
+                // Sincronizza bottom nav
+                document.querySelectorAll('.nav-item').forEach(b => {
+                    if (b.dataset.view === name || (name === 'orti' && b.dataset.view === 'home')) {
+                        b.classList.add('active');
+                    } else {
+                        if (name !== 'dettaglio' && name !== 'catalogo' && name !== 'meteo' && name !== 'raccolti') {
+                            b.classList.remove('active');
+                        }
+                    }
+                });
+
                 const home = document.getElementById('home-view'), dyn = document.getElementById('dynamic-view');
                 const s = document.getElementById('global-search').value;
                 if (name === 'home') { home.classList.remove('hidden'); dyn.classList.add('hidden'); this.updateHome(); }
@@ -967,9 +1004,11 @@
                     }
                     else if (name === 'meteo') { 
                         dyn.innerHTML = Views.renderMeteo(); // Render immediately with existing logs
+                        this.bindMeteo();
                         Store.fetchDailyWeather().then(() => { 
                             if (document.querySelector('.view-header h2')?.innerText === 'Dati Meteo Frosinone') {
                                 dyn.innerHTML = Views.renderMeteo(); 
+                                this.bindMeteo();
                             }
                         });
                     }
@@ -1193,6 +1232,20 @@
                 });
             },
             bindMeteo() {
+                document.querySelectorAll('.year-summary-card').forEach(card => {
+                    card.onclick = () => {
+                        const details = card.nextElementSibling;
+                        const icon = card.querySelector('.year-icon');
+                        if (details.classList.contains('hidden')) {
+                            details.classList.remove('hidden');
+                            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        } else {
+                            details.classList.add('hidden');
+                            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                        }
+                    };
+                });
+
                 document.querySelectorAll('.month-summary-card').forEach(card => {
                     card.onclick = () => {
                         const details = card.nextElementSibling;

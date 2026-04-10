@@ -8,6 +8,18 @@ const App = {
     fab: document.getElementById('main-fab'),
 
     init() {
+        // Imposta lo stato iniziale sulla history
+        history.replaceState({ view: 'home' }, '', '#home');
+        
+        // Intercetta il tasto indietro (fisico o gesture) e naviga internamente all'app
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.view) {
+                this.showView(event.state.view, false);
+            } else {
+                this.showView('home', false);
+            }
+        });
+
         this.initNavigation();
         this.initHomeButtons();
         
@@ -15,7 +27,21 @@ const App = {
     },
 
     // Gestione navigazione tra Home e altre sezioni
-    showView(viewName) {
+    showView(viewName, pushHistory = true) {
+        const supportedViews = ['home', 'orti'];
+        
+        if (!supportedViews.includes(viewName)) {
+            alert("Funzionalità '" + viewName + "' in arrivo nelle prossime versioni!");
+            return;
+        }
+
+        if (pushHistory) {
+            // Evita di pushare la stessa view se ci siamo già
+            if (!history.state || history.state.view !== viewName) {
+                history.pushState({ view: viewName }, '', `#${viewName}`);
+            }
+        }
+
         if (viewName === 'home') {
             this.homeView.classList.remove('hidden');
             this.dynamicView.classList.add('hidden');
@@ -25,8 +51,6 @@ const App = {
             this.dynamicView.classList.remove('hidden');
             this.dynamicView.innerHTML = OrtiView.render();
             this.initOrtiEvents();
-        } else {
-            alert("Funzionalità '" + viewName + "' in arrivo nelle prossime versioni!");
         }
     },
 
@@ -97,7 +121,7 @@ const App = {
 
             Store.addArea({ name, length, width, date });
             modal.classList.add('hidden');
-            this.showView('orti'); // Ricarica la vista
+            this.showView('orti', false); // Ricarica la vista senza modificare la history
         });
     }
 };
