@@ -368,8 +368,8 @@
         <!-- Modal Forecast -->
         <div id="modal-forecast" class="modal hidden">
             <div class="modal-content">
-                <h3 style="margin-bottom: 5px; color: var(--header-bg); font-weight: 800; font-family: 'Caveat', cursive; font-size: 26px; text-align: center;">Previsioni Meteo</h3>
-                <p style="text-align: center; color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">Frosinone</p>
+                <h3 style="margin-bottom: 5px; color: var(--header-bg); font-weight: 800; font-family: 'Caveat', cursive; font-size: 32px; text-align: center;">Previsioni Meteo</h3>
+                <p style="text-align: center; color: var(--text-secondary); font-size: 16px; margin-bottom: 15px;">Frosinone</p>
                 <div id="forecast-content" style="display: flex; flex-direction: column; gap: 10px;">
                     <div style="text-align:center; padding: 20px; color:#999;"><i class="fa-solid fa-spinner fa-spin"></i> Caricamento...</div>
                 </div>
@@ -1093,11 +1093,11 @@
                             html += `
                                 <div style="background:#fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid #eee; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                                     <div>
-                                        <div style="font-weight:800; font-size:15px; color:#333;">${days[i] || date} <span style="font-size:11px; color:#999; font-weight:600; margin-left: 5px;">${date.substring(0, 5)}</span></div>
-                                        <div style="font-size:12px; color:#666; margin-top:8px; display: flex; align-items: center; gap: 12px; font-weight: 700;">
+                                        <div style="font-weight:800; font-size:19px; color:#333;">${days[i] || date} <span style="font-size:14px; color:#999; font-weight:600; margin-left: 6px;">${date.substring(0, 5)}</span></div>
+                                        <div style="font-size:15px; color:#666; margin-top:10px; display: flex; align-items: center; gap: 14px; font-weight: 700;">
                                             <span><i class="fa-solid fa-temperature-arrow-down" style="color:#64b5f6;"></i> ${min}°</span>
                                             <span><i class="fa-solid fa-temperature-arrow-up" style="color:#ef5350;"></i> ${max}°</span>
-                                            ${rain > 0 ? `<span style="background: #e3f2fd; padding: 2px 6px; border-radius: 6px; color: #1565c0;"><i class="fa-solid fa-droplet"></i> ${rain} mm</span>` : ''}
+                                            ${rain > 0 ? `<span style="background: #e3f2fd; padding: 4px 8px; border-radius: 8px; color: #1565c0;"><i class="fa-solid fa-droplet"></i> ${rain} mm</span>` : ''}
                                         </div>
                                     </div>
                                     <div style="font-size: 32px;">${icon}</div>
