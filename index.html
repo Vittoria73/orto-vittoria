@@ -394,26 +394,29 @@
                 const month = parseInt(dateIso.split('-')[1]) - 1;
                 const avg = type === 'temp' ? this.HISTORICAL_AVG.temp[month] : (this.HISTORICAL_AVG.rain[month] || 0);
                 const delta = value - avg;
-                
+
+                // Thresholds variables
+                let t1, t2; // negative thresholds (Celeste, Azzurro, Blu)
+                let t3, t4; // positive thresholds (Giallo, Arancione, Rosso)
+
                 if (type === 'temp') {
-                    const ratio = Math.max(-1, Math.min(1, delta / 8));
-                    if (ratio > 0) {
-                        // Caldo: Giallo (60) -> Arancio (30) -> Rosso (0)
-                        const hue = Math.round(60 - (ratio * 60));
-                        return `hsl(${hue}, 100%, 80%)`;
-                    } else if (ratio < 0) {
-                        // Freddo: Celeste (190) -> Blu (230)
-                        const absRatio = Math.abs(ratio);
-                        const hue = Math.round(190 + (absRatio * 40));
-                        return `hsl(${hue}, 100%, 85%)`;
-                    }
-                    return '#fdfdfd'; // Neutro
+                    t1 = -1.5; t2 = -3.5; // less than -1.5 is Azzurro, less than -3.5 is Blu. -0.5 to -1.5 is Celeste.
+                    t3 = 1.5;  t4 = 3.5;
                 } else {
-                    // Pioggia: Secco -> Umido -> Bagnato
-                    if (value < 0.2) return '#f9f9f9';
-                    const ratio = Math.max(0.1, Math.min(1, value / 10));
-                    const hue = Math.round(200 - (ratio * 20)); 
-                    return `hsl(${hue}, 80%, ${Math.round(95 - ratio * 40)}%)`;
+                    t1 = -0.5; t2 = -1.5; // for rain
+                    t3 = 1.0;  t4 = 2.5; 
+                }
+
+                if (Math.abs(delta) < (type === 'temp' ? 0.5 : 0.2)) return '#fdfdfd'; // Neutro
+
+                if (delta < 0) {
+                    if (delta <= t2) return '#90caf9'; // Blu (molto più bassa)
+                    if (delta <= t1) return '#bbdefb'; // Azzurro (abbastanza più bassa)
+                    return '#e3f2fd'; // Celeste (poco più bassa)
+                } else {
+                    if (delta >= t4) return '#ffcdd2'; // Rosso (molto più alta)
+                    if (delta >= t3) return '#ffe082'; // Arancione (abbastanza più alta)
+                    return '#fff9c4'; // Giallo (poco più alta)
                 }
             }
         };
