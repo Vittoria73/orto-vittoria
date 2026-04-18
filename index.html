@@ -1030,6 +1030,7 @@
             renderImpostazioni() {
                 return `
                     <div class="view-header"><h2>Impostazioni</h2></div>
+                    <button id="force-update-app" class="btn-full" style="color:#ffffff; background-color:#bc6733; border-color:#bc6733; margin-bottom:15px;">Aggiorna App (Forza Ricarica)</button>
                     <button id="reset-db" class="btn-full" style="color:#ff5252; border-color:#ff5252;">Reset Totale Database</button>
                 `;
             }
@@ -1547,6 +1548,19 @@
                 });
             },
             bindSettings() {
+                document.getElementById('force-update-app').onclick = () => {
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                            for(let registration of registrations) {
+                                registration.unregister();
+                            }
+                            alert("Cache grafica svuotata! L'app si riavvierà ora.");
+                            location.reload(true);
+                        });
+                    } else {
+                        location.reload(true);
+                    }
+                };
                 document.getElementById('reset-db').onclick = () => {
                     if (confirm("ELIMINA TUTTO?") && confirm("SICURO?")) {
                         localStorage.removeItem(STORE_KEY); location.reload();
