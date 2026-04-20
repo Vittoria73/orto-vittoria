@@ -40,7 +40,17 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, .app-container {
+            -webkit-user-select: none;
             user-select: none;
+        }
+
+        input, textarea, select {
+            -webkit-user-select: auto !important;
+            user-select: auto !important;
         }
 
         body {
@@ -52,7 +62,14 @@
             justify-content: center;
         }
 
-        .hidden { display: none !important; }
+        .hidden { display: none !important; pointer-events: none !important; }
+
+        /* Garantisce che tutti i bottoni e elementi interattivi rispondano ai tocchi */
+        button, [onclick], .function-card, .nav-item, .area-item-card, .stat-card, .grid-cell, .planting-item, .p-row, .btn-primary, .btn-text, .btn-full, .btn-icon, .btn-edit-area, .fab {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+        }
 
         /* Contenitore principale (Telefono) */
         .app-container {
@@ -188,7 +205,7 @@
 
         /* LISTE AREE */
         .areas-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .area-item-card { background: white; padding: 15px; border-radius: var(--border-radius-md); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .area-item-card { background: white; padding: 15px; border-radius: var(--border-radius-md); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #eee; cursor: pointer; }
         
         .area-with-icon { display: flex; align-items: center; gap: 12px; }
         .area-type-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -349,71 +366,75 @@
             <div class="bottom-spacer"></div>
         </main>
 
-        <!-- Modal Planting DETAIL (GLOBALE) -->
-        <div id="modal-planting-detail" class="modal hidden">
-            <div class="modal-content">
-                <h3 id="det-title">Dettaglio Pianta</h3>
-                <div class="form-group"><label>Stato</label><select id="det-type"><option value="Piantina">Piantina</option><option value="Seme">Seme</option></select></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Data Inizio</label><input type="date" id="det-start"></div>
-                    <div class="form-group"><label>Data Fine/Espianto</label><input type="date" id="det-end"></div>
-                </div>
-                <div class="form-group"><label>Note</label><textarea id="det-notes" rows="3"></textarea></div>
-                <div class="modal-actions">
-                    <button id="save-det" class="btn-primary">Salva Modifiche</button>
-                    <button id="estirpa-det" class="btn-primary" style="background-color: #bc6733;"><i class="fa-solid fa-scissors"></i> Estirpa / Fine Ciclo</button>
-                    <button id="close-det" class="btn-text">Chiudi</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Forecast -->
-        <div id="modal-forecast" class="modal hidden">
-            <div class="modal-content">
-                <h3 style="margin-bottom: 5px; color: var(--header-bg); font-weight: 800; font-family: 'Caveat', cursive; font-size: 32px; text-align: center;">Previsioni Meteo</h3>
-                <p style="text-align: center; color: var(--text-secondary); font-size: 16px; margin-bottom: 15px;">Frosinone</p>
-                <div id="forecast-content" style="display: flex; flex-direction: column; gap: 10px;">
-                    <div style="text-align:center; padding: 20px; color:#999;"><i class="fa-solid fa-spinner fa-spin"></i> Caricamento...</div>
-                </div>
-                <div class="modal-actions" style="margin-top: 20px;">
-                    <button id="close-modal-forecast" class="btn-primary">Chiudi</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal New Harvest -->
-        <div id="modal-new-harvest" class="modal hidden">
-            <div class="modal-content">
-                <h3 style="margin-bottom: 15px; color: var(--header-bg); font-weight: 800;">Nuovo Raccolto</h3>
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="harvest-date">
-                </div>
-                <div class="form-group">
-                    <label>Orto di provenienza</label>
-                    <select id="harvest-area"></select>
-                </div>
-                <div class="form-group">
-                    <label>Ortaggio</label>
-                    <select id="harvest-plant"></select>
-                </div>
-                <div class="form-group">
-                    <label>Peso (Kg) (es. 1.450)</label>
-                    <input type="number" id="harvest-weight" step="0.001" min="0" placeholder="0.000">
-                </div>
-                <div class="modal-actions" style="margin-top: 20px;">
-                    <button id="save-harvest" class="btn-primary">Salva Raccolto</button>
-                    <button id="close-modal-harvest" class="btn-text">Annulla</button>
-                </div>
-            </div>
-        </div>
-
         <nav class="bottom-nav">
             <button class="nav-item active" data-view="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
             <button class="nav-item" data-view="calendario"><i class="fa-regular fa-calendar"></i><span>Calendario</span></button>
             <button class="nav-item" data-view="piante"><i class="fa-solid fa-seedling"></i><span>Piante</span></button>
             <button class="nav-item" data-view="impostazioni"><i class="fa-solid fa-gear"></i><span>Imp.</span></button>
         </nav>
+    </div>
+    <!-- ===== MODALI FUORI DA APP-CONTAINER =====
+         IMPORTANTE: i modal devono essere nel <body> e NON dentro .app-container
+         Su iOS Safari, position:fixed dentro overflow:hidden intercetta tutti i touch
+         anche quando il modal è display:none, bloccando completamente l'app.
+    -->
+    <!-- Modal Planting DETAIL (GLOBALE) -->
+    <div id="modal-planting-detail" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="det-title">Dettaglio Pianta</h3>
+            <div class="form-group"><label>Stato</label><select id="det-type"><option value="Piantina">Piantina</option><option value="Seme">Seme</option></select></div>
+            <div class="form-row">
+                <div class="form-group"><label>Data Inizio</label><input type="date" id="det-start"></div>
+                <div class="form-group"><label>Data Fine/Espianto</label><input type="date" id="det-end"></div>
+            </div>
+            <div class="form-group"><label>Note</label><textarea id="det-notes" rows="3"></textarea></div>
+            <div class="modal-actions">
+                <button id="save-det" class="btn-primary">Salva Modifiche</button>
+                <button id="estirpa-det" class="btn-primary" style="background-color: #bc6733;"><i class="fa-solid fa-scissors"></i> Estirpa / Fine Ciclo</button>
+                <button id="close-det" class="btn-text">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Forecast -->
+    <div id="modal-forecast" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 5px; color: var(--header-bg); font-weight: 800; font-family: 'Caveat', cursive; font-size: 32px; text-align: center;">Previsioni Meteo</h3>
+            <p style="text-align: center; color: var(--text-secondary); font-size: 16px; margin-bottom: 15px;">Frosinone</p>
+            <div id="forecast-content" style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="text-align:center; padding: 20px; color:#999;"><i class="fa-solid fa-spinner fa-spin"></i> Caricamento...</div>
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button id="close-modal-forecast" class="btn-primary">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal New Harvest -->
+    <div id="modal-new-harvest" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; color: var(--header-bg); font-weight: 800;">Nuovo Raccolto</h3>
+            <div class="form-group">
+                <label>Data</label>
+                <input type="date" id="harvest-date">
+            </div>
+            <div class="form-group">
+                <label>Orto di provenienza</label>
+                <select id="harvest-area"></select>
+            </div>
+            <div class="form-group">
+                <label>Ortaggio</label>
+                <select id="harvest-plant"></select>
+            </div>
+            <div class="form-group">
+                <label>Peso (Kg) (es. 1.450)</label>
+                <input type="number" id="harvest-weight" step="0.001" min="0" placeholder="0.000">
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button id="save-harvest" class="btn-primary">Salva Raccolto</button>
+                <button id="close-modal-harvest" class="btn-text">Annulla</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -470,12 +491,21 @@
             init() {
                 const saved = localStorage.getItem(STORE_KEY);
                 if (saved) {
-                    this.data = JSON.parse(saved);
-                    // Migrations/Checks
-                    if (!this.data.plantings) this.data.plantings = [];
-                    if (!this.data.weather) this.data.weather = [];
-                    if (!this.data.harvests) this.data.harvests = [];
-                } else {
+                    try {
+                        this.data = JSON.parse(saved);
+                    } catch (e) {
+                        console.error('Store parse error', e);
+                        this.data = null;
+                        localStorage.removeItem(STORE_KEY);
+                    }
+                    if (this.data) {
+                        // Migrations/Checks
+                        if (!this.data.plantings) this.data.plantings = [];
+                        if (!this.data.weather) this.data.weather = [];
+                        if (!this.data.harvests) this.data.harvests = [];
+                    }
+                } 
+                if (!this.data) {
                     this.data = {
                         areas: [], plantTypes: [
                             {id: "1", name: "Pomodoro Cuore di Bue"}, {id: "2", name: "Pomodoro Bisteccone"},
@@ -1557,11 +1587,14 @@
 
 
 
-        // Registrazione Service Worker per PWA
+        // Registrazione Service Worker per PWA e force update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('SW Registrato!', reg.scope))
+                    .then(reg => {
+                        console.log('SW Registrato!', reg.scope);
+                        reg.update(); // Forza check per update
+                    })
                     .catch(err => console.log('Errore SW:', err));
             });
         }
